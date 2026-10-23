@@ -27,7 +27,10 @@ AIRLINES = ["THY", "PGT", "SXS", "AJA", "KKK"]
 CRUISE_LEVELS_M = [10668.0, 11278.0]   # FL350, FL370
 CRUISE_SPEED_MS = 230.0
 TERMINAL_SPEED_MS = 140.0
-PHASE = 0.15                            # rotanın ilk/son %15'i tırmanış/alçalış
+# İrtifa, kat edilen/kalan mesafeyle sınırlanır: tırmanış ~%8, alçalış 3° süzülüş (~%5.24).
+# Böylece normal dikey hızlar gerçekçi kalır (~ +11 / -7 m/s) ve anomali eşiğine takılmaz.
+CLIMB_GRADIENT = 0.08
+DESCENT_GRADIENT = 0.0524
 
 P_RAPID_DESCENT = 0.0005
 P_EMERGENCY = 0.0002
@@ -79,18 +82,16 @@ class Flight:
         f = min(self.progress, 1.0)
         return la1 + (la2 - la1) * f, lo1 + (lo2 - lo1) * f
 
+    def _base_altitude(self) -> float:
+        flown = min(self.progress, 1.0) * self.distance_m
+        remaining = self.distance_m - flown
+        return min(self.cruise_alt, flown * CLIMB_GRADIENT, remaining * DESCENT_GRADIENT)
+
     def _profile_altitude(self) -> float:
-        f = self.progress
-        if f < PHASE:
-            alt = self.cruise_alt * f / PHASE
-        elif f > 1 - PHASE:
-            alt = self.cruise_alt * max(0.0, 1 - f) / PHASE
-        else:
-            alt = self.cruise_alt
-        return max(0.0, alt + self.alt_offset)
+        return max(0.0, self._base_altitude() + self.alt_offset)
 
     def in_cruise(self) -> bool:
-        return PHASE <= self.progress <= 1 - PHASE
+        return self._base_altitude() >= self.cruise_alt - 1.0
 
 
 class Simulator:
@@ -119,14 +120,14 @@ class Simulator:
         )
 
     def _new_shadow(self) -> Optional[Flight]:
-        leaders = [f for f in self.flights if f.in_cruise() and f.progress < 0.7]
+        leaders = [f for f in self.flights if f.in_cruise() and f.progress < 0.6]
         if not leaders:
             return None
         lead = self.rng.choice(leaders)
         shadow = self._new_flight()
         shadow.origin, shadow.dest, shadow.cruise_alt = lead.origin, lead.dest, lead.cruise_alt
         shadow.__post_init__()
-        shadow.progress = max(0.0, lead.progress - 2_000.0 / lead.distance_m)   # ~2 km arkada
+        shadow.progress = max(0.0, lead.progress - 600.0 / lead.distance_m)     # ~600 m arkada
         shadow.alt_offset = self.rng.uniform(-120.0, 120.0)                     # < 400 ft fark
         shadow.altitude = shadow._profile_altitude()
         return shadow

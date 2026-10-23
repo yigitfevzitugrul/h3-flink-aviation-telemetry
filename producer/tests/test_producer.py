@@ -30,6 +30,18 @@ def test_simulator_respawns_finished_flights():
     assert first.isdisjoint({f.icao24 for f in sim.flights})
 
 
+def test_normal_flight_profile_never_looks_like_rapid_descent():
+    import simulator
+    simulator.P_RAPID_DESCENT = 0.0   # bilinçli anomalileri kapat
+    try:
+        sim = Simulator(n_aircraft=40, seed=7)
+        for i in range(1500):
+            for r in sim.tick(i * 5000):
+                assert r.vertical_rate > -30.48, r   # -6000 ft/dk eşiği
+    finally:
+        simulator.P_RAPID_DESCENT = 0.0005
+
+
 def test_parse_states_skips_missing_positions_and_strips_callsign():
     payload = {"time": 1, "states": [
         ["4ba9c1", "THY1AB  ", "Turkey", 1700000000, 1700000001, 29.0, 41.0, 10000.0,

@@ -12,7 +12,7 @@ import java.io.IOException;
  *
  * <ul>
  *   <li>{@link #REGION_RES} (res-5, ~250 km²): bölgesel trafik yoğunluğu</li>
- *   <li>{@link #PROXIMITY_RES} (res-8, ~0.74 km²): yakın uçuş tespiti</li>
+ *   <li>{@link #PROXIMITY_RES} (res-7, ~5 km², kenar ~1.2 km): yakın uçuş tespiti</li>
  * </ul>
  *
  * {@link H3Core} JNI tabanlıdır ve serileştirilemez; bu yüzden her subtask'ta open() içinde oluşturulur.
@@ -20,7 +20,7 @@ import java.io.IOException;
 public class H3Enricher extends RichMapFunction<AircraftPosition, AircraftPosition> {
 
     public static final int REGION_RES = 5;
-    public static final int PROXIMITY_RES = 8;
+    public static final int PROXIMITY_RES = 7;
 
     private transient H3Core h3;
 

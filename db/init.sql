@@ -25,7 +25,9 @@ CREATE TABLE IF NOT EXISTS alerts (
     altitude_m   DOUBLE PRECISION,
     details      TEXT,
     event_time   TIMESTAMPTZ  NOT NULL,
-    created_at   TIMESTAMPTZ  NOT NULL DEFAULT now()
+    created_at   TIMESTAMPTZ  NOT NULL DEFAULT now(),
+    -- Flink yeniden oynattığında aynı uyarı iki kez yazılmasın (other_icao24 NULL olabilir)
+    CONSTRAINT uq_alerts_event UNIQUE NULLS NOT DISTINCT (alert_type, icao24, other_icao24, event_time)
 );
 
 CREATE INDEX IF NOT EXISTS idx_alerts_event_time ON alerts (event_time DESC);

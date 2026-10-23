@@ -48,9 +48,9 @@ class H3EnricherTest {
     void cellCenterIsNearOriginalPoint() {
         AircraftPosition p = enricher.map(at(38.4237, 27.1428));   // İzmir
         LatLng center = h3.cellToLatLng(p.h3Proximity);
-        // res-8 hücre kenarı ~0.46 km: merkez 0.01 dereceden (~1 km) yakın olmalı
-        assertEquals(38.4237, center.lat, 0.01);
-        assertEquals(27.1428, center.lng, 0.01);
+        // res-7 hücre kenarı ~1.2 km: merkez 0.02 dereceden (~2 km) yakın olmalı
+        assertEquals(38.4237, center.lat, 0.02);
+        assertEquals(27.1428, center.lng, 0.02);
     }
 
     @Test
@@ -58,6 +58,6 @@ class H3EnricherTest {
         AircraftPosition a = enricher.map(at(39.90, 32.85));
         AircraftPosition b = enricher.map(at(39.90, 32.88));   // ~2.5 km doğu
         long distance = h3.gridDistance(a.h3Proximity, b.h3Proximity);
-        assertTrue(distance >= 2 && distance <= 5, "grid mesafesi: " + distance);
+        assertTrue(distance >= 1 && distance <= 3, "grid mesafesi: " + distance);
     }
 }
