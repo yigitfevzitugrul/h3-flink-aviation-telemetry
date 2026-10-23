@@ -115,6 +115,20 @@ services:
       timeout: 5s
       retries: 10
 
+  # FastAPI + statik web haritası
+  dashboard:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-telemetry}:${POSTGRES_PASSWORD:-telemetry}@postgres:5432/${POSTGRES_DB:-telemetry}
+    restart: unless-stopped
+
 volumes:
   flink-checkpoints:
   pg-data:

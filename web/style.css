@@ -1,0 +1,196 @@
+/* Harita koyu temalı olduğundan arayüz de koyu; açık temada panel açık yüzeye geçer. */
+:root {
+  --bg: #0b0f14;
+  --surface: rgba(17, 22, 30, 0.92);
+  --surface-2: rgba(255, 255, 255, 0.04);
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #e6ebf2;
+  --text-muted: #8b96a8;
+  --accent: #22d3ee;
+  --live: #34d399;
+  --danger: #ff4d5e;
+  --radius: 12px;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --surface: rgba(255, 255, 255, 0.94);
+    --surface-2: rgba(15, 23, 42, 0.04);
+    --border: rgba(15, 23, 42, 0.10);
+    --text: #0f172a;
+    --text-muted: #5b6577;
+    --shadow: 0 10px 30px rgba(15, 23, 42, 0.18);
+    color-scheme: light;
+  }
+}
+
+:root[data-theme="dark"] { color-scheme: dark; }
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+#map { position: fixed; inset: 0; }
+
+.num { font-variant-numeric: tabular-nums; }
+
+/* ---------- Panel ---------- */
+.panel {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  bottom: 16px;
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand h1 { margin: 0; font-size: 17px; font-weight: 700; letter-spacing: -0.01em; }
+.sub { margin: 6px 0 0; color: var(--text-muted); font-size: 12px; }
+
+.live-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: var(--live);
+  box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.6);
+  animation: pulse 2s infinite;
+  flex: none;
+}
+.live-dot.offline { background: var(--danger); animation: none; }
+
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.55); }
+  70%  { box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+}
+
+/* ---------- Stat kutuları ---------- */
+.tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.tile {
+  display: flex; flex-direction: column; gap: 4px;
+  padding: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-width: 0;
+}
+.tile-label { color: var(--text-muted); font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile-value { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.tile-value small { font-size: 11px; font-weight: 500; color: var(--text-muted); }
+
+.label {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.spark { width: 100%; height: 44px; display: block; }
+.spark .line { fill: none; stroke: var(--accent); stroke-width: 1.75; vector-effect: non-scaling-stroke; }
+.spark .area { fill: var(--accent); opacity: 0.12; }
+
+/* ---------- Lejant ---------- */
+.ramp { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; }
+.ramp span {
+  height: 22px;
+  border-radius: 4px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600;
+  color: #0b0f14;
+}
+
+/* ---------- Uyarılar ---------- */
+.alerts { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit; font-size: 12px;
+  cursor: pointer;
+}
+.chip:hover { color: var(--text); }
+.chip.active { background: var(--surface-2); color: var(--text); border-color: var(--text-muted); }
+.chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+.chip .count { font-variant-numeric: tabular-nums; opacity: 0.8; }
+
+.alert-list {
+  list-style: none; margin: 0; padding: 0;
+  overflow-y: auto;
+  flex: 1; min-height: 0;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.alert {
+  display: grid;
+  grid-template-columns: 10px 1fr auto;
+  gap: 4px 10px;
+  align-items: baseline;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+.alert:hover, .alert.selected { background: var(--surface-2); border-color: var(--border); }
+.alert .dot { width: 10px; height: 10px; border-radius: 50%; align-self: center; }
+.alert .title { font-weight: 600; font-size: 13px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.alert .time { color: var(--text-muted); font-size: 11px; white-space: nowrap; }
+.alert .details { grid-column: 2 / 4; color: var(--text-muted); font-size: 12px; }
+.empty { color: var(--text-muted); font-size: 13px; padding: 12px 2px; }
+
+/* deck.gl tooltip */
+.deck-tooltip {
+  font-family: "Inter", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.5;
+  border-radius: 8px;
+  padding: 8px 10px !important;
+  background: rgba(17, 22, 30, 0.95) !important;
+  color: #e6ebf2 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  max-width: 260px;
+}
+
+.maplibregl-ctrl-attrib { font-size: 10px; }
+
+/* ---------- Mobil: panel alttan sayfa ---------- */
+@media (max-width: 720px) {
+  .panel {
+    top: auto;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    width: auto;
+    max-height: 48vh;
+    padding: 14px;
+    gap: 12px;
+    overflow-y: auto;
+  }
+  .alerts { flex: none; }
+  .alert-list { overflow: visible; }
+  .tile-value { font-size: 18px; }
+}

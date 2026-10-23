@@ -148,7 +148,9 @@ class Simulator:
                 f = self._respawn()
                 self.flights[i] = f
 
-            speed = CRUISE_SPEED_MS if f.in_cruise() else TERMINAL_SPEED_MS
+            # Hız irtifayla birlikte artar: alçakta yaklaşma hızı, seyir irtifasında seyir hızı
+            climb_ratio = min(1.0, f.altitude / f.cruise_alt) if f.cruise_alt else 1.0
+            speed = TERMINAL_SPEED_MS + (CRUISE_SPEED_MS - TERMINAL_SPEED_MS) * climb_ratio
             prev_alt = f.altitude
             f.progress += speed * dt / f.distance_m
 
@@ -177,7 +179,7 @@ class Simulator:
                 lat=round(lat, 5),
                 lon=round(lon, 5),
                 baro_altitude=round(f.altitude, 1),
-                velocity=speed,
+                velocity=round(speed, 1),
                 heading=round(bearing_deg(lat, lon, la2, lo2), 1),
                 vertical_rate=round((f.altitude - prev_alt) / dt, 2),
                 squawk=f.squawk,

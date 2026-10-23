@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aero Telemetry</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css" rel="stylesheet">
+  <link href="style.css" rel="stylesheet">
+</head>
+<body>
+  <div id="map"></div>
+
+  <aside class="panel">
+    <header class="panel-head">
+      <div class="brand">
+        <span class="live-dot" id="live-dot" title="Canlı"></span>
+        <h1>Hava Trafiği · Türkiye</h1>
+      </div>
+      <p class="sub">H3 res-5 · son 5 dk · <span id="window" class="num">—</span></p>
+    </header>
+
+    <section class="tiles">
+      <div class="tile">
+        <span class="tile-label">Hücre · 5 dk</span>
+        <span class="tile-value" id="stat-cells">—</span>
+      </div>
+      <div class="tile">
+        <span class="tile-label">En yoğun hücre</span>
+        <span class="tile-value"><span id="stat-peak">—</span><small> uçak</small></span>
+      </div>
+      <div class="tile">
+        <span class="tile-label">Uyarı · 1 sa</span>
+        <span class="tile-value" id="stat-alerts">—</span>
+      </div>
+    </section>
+
+    <section class="block">
+      <div class="label">Aktif hücre · son 30 dk</div>
+      <svg id="spark" class="spark" viewBox="0 0 300 44" preserveAspectRatio="none" aria-hidden="true"></svg>
+    </section>
+
+    <section class="block">
+      <div class="label">Hücre başına uçak</div>
+      <div class="ramp" id="ramp"></div>
+    </section>
+
+    <section class="block alerts">
+      <div class="label">Uyarılar</div>
+      <div class="chips" id="chips"></div>
+      <ul class="alert-list" id="alert-list"></ul>
+    </section>
+  </aside>
+
+  <!-- h3-js, deck.gl'in H3HexagonLayer'ı için deck.gl'den önce yüklenmeli -->
+  <script src="https://unpkg.com/h3-js@4.4.0/dist/h3-js.umd.js"></script>
+  <script src="https://unpkg.com/deck.gl@9.2.11/dist.min.js"></script>
+  <script src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
