@@ -56,28 +56,42 @@ services:
     container_name: jobmanager
     ports:
       - "8081:8081"   # Flink Web UI
-    command: jobmanager
+    # Volume root sahipliğinde oluşur; flink kullanıcısına devredip normal entrypoint'i çalıştır
+    entrypoint: ["bash", "-c", "chown flink:flink /opt/flink/checkpoints && exec /docker-entrypoint.sh jobmanager"]
     environment:
       FLINK_PROPERTIES: |
         jobmanager.rpc.address: jobmanager
         state.backend.type: hashmap
-        state.checkpoints.dir: file:///tmp/flink-checkpoints
+        state.checkpoints.dir: file:///opt/flink/checkpoints
     volumes:
-      - flink-checkpoints:/tmp/flink-checkpoints
+      - flink-checkpoints:/opt/flink/checkpoints
 
   taskmanager:
     image: flink:1.20.3-java17
     depends_on:
       - jobmanager
-    command: taskmanager
+    # Volume root sahipliğinde oluşur; flink kullanıcısına devredip normal entrypoint'i çalıştır
+    entrypoint: ["bash", "-c", "chown flink:flink /opt/flink/checkpoints && exec /docker-entrypoint.sh taskmanager"]
     environment:
       FLINK_PROPERTIES: |
         jobmanager.rpc.address: jobmanager
         taskmanager.numberOfTaskSlots: 4
         state.backend.type: hashmap
-        state.checkpoints.dir: file:///tmp/flink-checkpoints
+        state.checkpoints.dir: file:///opt/flink/checkpoints
     volumes:
-      - flink-checkpoints:/tmp/flink-checkpoints
+      - flink-checkpoints:/opt/flink/checkpoints
+
+  # Flink job'ını derleyip cluster'a gönderir (main() burada, istemci tarafında çalışır)
+  job-submitter:
+    build: ./flink-job
+    depends_on:
+      - jobmanager
+      - taskmanager
+      - kafka-init
+    environment:
+      KAFKA_BOOTSTRAP: kafka:9092
+      KAFKA_TOPIC: aircraft-positions
+    restart: "no"
 
   postgres:
     image: postgres:16-alpine
