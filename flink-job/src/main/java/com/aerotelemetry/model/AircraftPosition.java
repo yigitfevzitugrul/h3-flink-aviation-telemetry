@@ -21,6 +21,10 @@ public class AircraftPosition {
     public long eventTime;
     public String source;
 
+    /** H3Enricher tarafından doldurulur. */
+    public String h3Region;
+    public String h3Proximity;
+
     public AircraftPosition() {}
 
     @Override

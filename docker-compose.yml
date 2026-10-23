@@ -88,9 +88,13 @@ services:
       - jobmanager
       - taskmanager
       - kafka-init
+      - postgres
     environment:
       KAFKA_BOOTSTRAP: kafka:9092
       KAFKA_TOPIC: aircraft-positions
+      JDBC_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-telemetry}
+      POSTGRES_USER: ${POSTGRES_USER:-telemetry}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-telemetry}
     restart: "no"
 
   postgres:

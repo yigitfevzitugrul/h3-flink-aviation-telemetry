@@ -15,6 +15,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <flink.version>1.20.3</flink.version>
         <kafka.connector.version>3.4.0-1.20</kafka.connector.version>
+        <jdbc.connector.version>3.3.0-1.20</jdbc.connector.version>
+        <postgresql.version>42.7.4</postgresql.version>
+        <h3.version>4.5.1</h3.version>
         <jackson.version>2.17.2</jackson.version>
         <junit.version>5.11.3</junit.version>
         <log4j.version>2.24.1</log4j.version>
@@ -40,6 +43,21 @@
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka</artifactId>
             <version>${kafka.connector.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-jdbc-core</artifactId>
+            <version>${jdbc.connector.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.uber</groupId>
+            <artifactId>h3</artifactId>
+            <version>${h3.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
